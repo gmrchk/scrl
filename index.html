@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Scrl</title>
+        <link href="https://fonts.googleapis.com/css?family=Rubik" rel="stylesheet">
+        <style>
+            html, body {
+                margin: 0 auto;
+                font-family: 'Rubik', sans-serif;
+                width: 100%;
+                height: 100%;
+            }
+
+            .section {
+                box-sizing: border-box;
+                width: 100%;
+                height: 80%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 20px 10px;
+                flex-wrap: wrap;
+                text-align: center;
+                font-size: 30vh;
+                font-weight: 700;
+                background: #000;
+                color: #fff;
+            }
+
+            .section:nth-child(odd) {
+                background: #fff;
+                color: #000;
+            }
+
+            .nav {
+                position: fixed;
+                top: 20px;
+                bottom: 20px;
+                left: 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                text-align: center;
+            }
+
+            a {
+                border-radius: 4px;
+                border: 1px solid transparent;
+                background: #D43078;
+                color: #fff;
+                padding: 10px 20px;
+                margin: 0 0 8px;
+                box-shadow: 0 4px 26px rgba(212, 48, 120, .6);
+                transition: .2s;
+                text-decoration: none;
+                display: block;
+                font-size: 16px;
+            }
+
+            a:active {
+                transform: scale(.95);
+            }
+        </style>
+    </head>
+    <body>
+        <nav class="nav">
+            <a href="#section-1">Section 1</a>
+            <a href="#section-2">Section 2</a>
+            <a href="#section-3">Section 3</a>
+            <a href="#section-4">Section 4</a>
+            <a href="#section-5">Section 5</a>
+        </nav>
+        <section class="section" id="section-1">1</section>
+        <section class="section" id="section-2">2</section>
+        <section class="section" id="section-3">3</section>
+        <section class="section" id="section-4">4</section>
+        <section class="section" id="section-5">5</section>
+
+        <script src="./dist/scrl.js"></script>
+        <script>
+            var scrl = new Scrl({
+                onAlreadyAtPositions: () => {console.log("onAlreadyAtPositions")},
+                onCancel: () => {console.log("cancel")},
+                onEnd: () => {console.log("end")},
+                onStart: () => {console.log("start")},
+                onTick: () => {console.log("tick")},
+                friction: .3, // 1 - .3
+                acceleration: .04,
+            });
+
+            Array.prototype.slice.call(document.querySelectorAll('.nav a')).forEach(function (link) {
+                link.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    scrl.scrollTo(document.querySelector(link.getAttribute('href')));
+                });
+            });
+
+            console.log(scrl);
+        </script>
+    </body>
+</html>
