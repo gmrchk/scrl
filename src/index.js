@@ -5,7 +5,7 @@ export default class Scrl {
     _velocityY = 0;
     _targetPositionY = 0;
     _targetPositionYWithOffset = 0;
-    _direction = 0;
+    _directionY = 0;
     
     constructor(options) {
         // default options
@@ -69,8 +69,8 @@ export default class Scrl {
         
         // calculated required values
         this._positionY = this._getScrollPosition();
-        this._direction = (this._positionY > this._targetPositionY) ? -1 : 1;
-        this._targetPositionYWithOffset = this._targetPositionY + this._direction;
+        this._directionY = (this._positionY > this._targetPositionY) ? -1 : 1;
+        this._targetPositionYWithOffset = this._targetPositionY + this._directionY;
         this._velocityY = 0;
         
         if (this._positionY !== this._targetPositionY) {
@@ -90,7 +90,7 @@ export default class Scrl {
         const distance = this._getUpdatedDistance();
         this._render();
         
-        if (this._direction === 1 && this._targetPositionY > this._positionY || this._direction === -1 && this._targetPositionY < this._positionY) {
+        if (this._directionY === 1 && this._targetPositionY > this._positionY || this._directionY === -1 && this._targetPositionY < this._positionY) {
             // calculate next position
             this._raf = requestAnimationFrame(this._animate);
             this.options.onTick();
