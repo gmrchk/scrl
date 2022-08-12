@@ -165,15 +165,7 @@ export default class Scrl {
     * @returns float
     */
     _getScrollPosition() {
-        return this._elementIsWindow() ? this._getWindowScrollPosition() : this.options.element.scrollTop;
+        return this._elementIsWindow() ? window.pageYOffset : this.options.element.scrollTop;
     }
     
-    /**
-    * Get the window's current scroll position, cross-browser
-    * @see https://stackoverflow.com/a/20478983/586823
-    * @returns float
-    */
-    _getWindowScrollPosition() {
-        return Math.max(window.pageYOffset, document.documentElement.scrollTop, document.body.scrollTop);
-    }
 }
