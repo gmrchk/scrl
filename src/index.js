@@ -48,19 +48,19 @@ export default class Scrl {
     }
     
     /**
-     * scroll towards a number or element
+     * scroll towards a number or HTMLElement
      * @param {number|HTMLElement} offsetOrElement 
      * @returns 
      */
     scrollTo = (offsetOrElement) => {
         if (offsetOrElement && offsetOrElement.nodeType) {
-            // the offset is an element
+            // the offset is a HTMLElement
             this._targetPositionY = this._getTargetPositionFromElement(offsetOrElement);
         } else if (parseInt(offsetOrElement) === offsetOrElement) {
             // the offset is a number
             this._targetPositionY = Math.round(offsetOrElement);
         } else {
-            console.error('Argument must be a number or an element.');
+            console.error('Argument must be a number or HTMLElement.');
             return;
         }
         
