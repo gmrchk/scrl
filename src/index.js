@@ -16,7 +16,7 @@ export default class Scrl {
 			onTick: () => {},
 			friction: 0.7, // 1 - .3
 			acceleration: 0.04,
-			element: window
+			scrollTarget: window
 		};
 
 		// merge options
@@ -25,12 +25,7 @@ export default class Scrl {
 			...options
 		};
 
-		if (!this._elementIsWindow() && !(this.options.element instanceof Element)) {
-			throw new Error(
-				'[srcl] options.element expects either window or an HTMLElement. Given value:',
-				options.element
-			);
-		}
+		this.validateScrollTarget();
 
 		// set reverse friction
 		if (options && options.friction) {
@@ -51,6 +46,21 @@ export default class Scrl {
 				passive: true
 			}
 		);
+	}
+
+    /**
+     * Validates options.scrollTarget
+     */
+	validateScrollTarget() {
+		if (this.options.scrollTarget == null) {
+			throw new Error("[scrl] options.scrollTarget can't be null");
+		}
+		if (!this._scrollTargetIsWindow() && !(this.options.scrollTarget instanceof Element)) {
+			throw new Error(
+				'[srcl] options.scrollTarget expects either window or an HTMLElement. Given value:',
+				options.scrollTarget
+			);
+		}
 	}
 
 	/**
@@ -137,31 +147,31 @@ export default class Scrl {
 	 * Apply the current scroll position to either the window or the HTMLElement
 	 */
 	_render = () => {
-		this.options.element.scrollTo(0, this._positionY);
+		this.options.scrollTarget.scrollTo(0, this._positionY);
 	};
 
 	/**
-	 * Checks if an the given options.element is equal to window
+	 * Checks if an the given options.scrollTarget is equal to window
 	 * @see https://stackoverflow.com/a/3099796/586823
 	 * @returns boolean
 	 */
-	_elementIsWindow() {
-		return this.options.element.self === window;
+	_scrollTargetIsWindow() {
+		return this.options.scrollTarget.self === window;
 	}
 
 	/**
-	 * Get the target scroll position for a given target element
+	 * Get the target scroll position for a given HTMLElement
 	 * @param {window|HTMLElement} targetElement
 	 * @returns float
 	 */
 	_getTargetPositionFromElement(targetElement) {
-		if (this._elementIsWindow()) {
+		if (this._scrollTargetIsWindow()) {
 			return Math.round(targetElement.getBoundingClientRect().top + window.pageYOffset);
 		}
 		return (
 			targetElement.getBoundingClientRect().top -
-			this.options.element.getBoundingClientRect().top +
-			this.options.element.scrollTop
+			this.options.scrollTarget.getBoundingClientRect().top +
+			this.options.scrollTarget.scrollTop
 		);
 	}
 
@@ -170,17 +180,17 @@ export default class Scrl {
 	 * @returns float
 	 */
 	_getMaximumPossibleScrollPosition() {
-		if (this._elementIsWindow()) {
+		if (this._scrollTargetIsWindow()) {
 			return document.documentElement.scrollHeight - window.innerHeight;
 		}
-		return this.options.element.scrollHeight - this.options.element.offsetHeight;
+		return this.options.scrollTarget.scrollHeight - this.options.scrollTarget.offsetHeight;
 	}
 
 	/**
-	 * Returns either the window's or an element's current scroll position
+	 * Returns the scrollTarget's current scroll position
 	 * @returns float
 	 */
 	_getScrollPosition() {
-		return this._elementIsWindow() ? window.pageYOffset : this.options.element.scrollTop;
+		return this._scrollTargetIsWindow() ? window.pageYOffset : this.options.scrollTarget.scrollTop;
 	}
 }
