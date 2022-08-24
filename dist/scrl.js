@@ -117,122 +117,222 @@ module.exports = _index2.default; // this is here for webpack to expose Scrl as 
 
 
 Object.defineProperty(exports, "__esModule", {
-    value: true
+	value: true
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var Scrl = function Scrl(options) {
-    var _this = this;
+var Scrl = function () {
+	function Scrl(options) {
+		var _this = this;
 
-    _classCallCheck(this, Scrl);
+		_classCallCheck(this, Scrl);
 
-    this._raf = null;
-    this._positionY = 0;
-    this._velocityY = 0;
-    this._targetPositionY = 0;
-    this._targetPositionYWithOffset = 0;
-    this._direction = 0;
+		this._raf = null;
+		this._positionY = 0;
+		this._velocityY = 0;
+		this._targetPositionY = 0;
+		this._targetPositionYWithOffset = 0;
+		this._directionY = 0;
 
-    this.scrollTo = function (offset) {
-        if (offset && offset.nodeType) {
-            // the offset is element
-            _this._targetPositionY = Math.round(offset.getBoundingClientRect().top + window.pageYOffset);
-        } else if (parseInt(_this._targetPositionY) === _this._targetPositionY) {
-            // the offset is a number
-            _this._targetPositionY = Math.round(offset);
-        } else {
-            console.error('Argument must be a number or an element.');
-            return;
-        }
+		this.scrollTo = function (offsetOrElement) {
+			if (offsetOrElement && offsetOrElement.nodeType) {
+				// the offset is a HTMLElement
+				_this._targetPositionY = _this._getTargetPositionFromElement(offsetOrElement);
+			} else if (parseInt(offsetOrElement) === offsetOrElement) {
+				// the offset is a number
+				_this._targetPositionY = Math.round(offsetOrElement);
+			} else {
+				console.error('Argument must be a number or HTMLElement.');
+				return;
+			}
 
-        // don't animate beyond the document height
-        if (_this._targetPositionY > document.documentElement.scrollHeight - window.innerHeight) {
-            _this._targetPositionY = document.documentElement.scrollHeight - window.innerHeight;
-        }
+			// don't animate beyond the available height
+			_this._targetPositionY = Math.min(_this._targetPositionY, _this._getMaximumPossibleScrollPosition());
 
-        // calculated required values
-        _this._positionY = document.body.scrollTop || document.documentElement.scrollTop;
-        _this._direction = _this._positionY > _this._targetPositionY ? -1 : 1;
-        _this._targetPositionYWithOffset = _this._targetPositionY + _this._direction;
-        _this._velocityY = 0;
+			// calculated required values
+			_this._positionY = _this._getScrollPosition();
+			_this._directionY = _this._positionY > _this._targetPositionY ? -1 : 1;
+			_this._targetPositionYWithOffset = _this._targetPositionY + _this._directionY;
+			_this._velocityY = 0;
 
-        if (_this._positionY !== _this._targetPositionY) {
-            // start animation
-            _this.options.onStart();
-            _this._animate();
-        } else {
-            // page is already at the position
-            _this.options.onAlreadyAtPositions();
-        }
-    };
+			if (_this._positionY !== _this._targetPositionY) {
+				// start animation
+				_this.options.onStart();
+				_this._animate();
+			} else {
+				// page is already at the position
+				_this.options.onAlreadyAtPositions();
+			}
+		};
 
-    this._animate = function () {
-        var distance = _this._update();
-        _this._render();
+		this._animate = function () {
+			var distance = _this._getUpdatedDistance();
+			_this._render();
 
-        if (_this._direction === 1 && _this._targetPositionY > _this._positionY || _this._direction === -1 && _this._targetPositionY < _this._positionY) {
-            // calculate next position
-            _this._raf = requestAnimationFrame(_this._animate);
-            _this.options.onTick();
-        } else {
-            // finish and set position to the final position
-            _this._positionY = _this._targetPositionY;
-            _this._render();
-            _this._raf = null;
-            _this.options.onTick();
-            _this.options.onEnd();
-            // this.triggerEvent('scrollDone')
-        }
-    };
+			if (_this._directionY === 1 && _this._targetPositionY > _this._positionY || _this._directionY === -1 && _this._targetPositionY < _this._positionY) {
+				// calculate next position
+				_this._raf = requestAnimationFrame(_this._animate);
+				_this.options.onTick();
+			} else {
+				// finish and set position to the final position
+				_this._positionY = _this._targetPositionY;
+				_this._render();
+				_this._raf = null;
+				_this.options.onTick();
+				_this.options.onEnd();
+				// this.triggerEvent('scrollDone')
+			}
+		};
 
-    this._update = function () {
-        var distance = _this._targetPositionYWithOffset - _this._positionY;
-        var attraction = distance * _this.options.acceleration;
+		this._getUpdatedDistance = function () {
+			var distance = _this._targetPositionYWithOffset - _this._positionY;
+			var attraction = distance * _this.options.acceleration;
 
-        _this._velocityY += attraction;
+			_this._velocityY += attraction;
 
-        _this._velocityY *= _this.options.friction;
-        _this._positionY += _this._velocityY;
+			_this._velocityY *= _this.options.friction;
+			_this._positionY += _this._velocityY;
 
-        return Math.abs(distance);
-    };
+			return Math.abs(distance);
+		};
 
-    this._render = function () {
-        window.scrollTo(0, _this._positionY);
-    };
+		this._render = function () {
+			_this.options.scrollTarget.scrollTo(0, _this._positionY);
+		};
 
-    // default options
-    var defaults = {
-        onAlreadyAtPositions: function onAlreadyAtPositions() {},
-        onCancel: function onCancel() {},
-        onEnd: function onEnd() {},
-        onStart: function onStart() {},
-        onTick: function onTick() {},
-        friction: .7, // 1 - .3
-        acceleration: .04
+		// default options
+		var defaults = {
+			onAlreadyAtPositions: function onAlreadyAtPositions() {},
+			onCancel: function onCancel() {},
+			onEnd: function onEnd() {},
+			onStart: function onStart() {},
+			onTick: function onTick() {},
+			friction: 0.7, // 1 - .3
+			acceleration: 0.04,
+			scrollTarget: window
+		};
 
-        // merge options
-    };this.options = _extends({}, defaults, options);
+		// merge options
+		this.options = _extends({}, defaults, options);
 
-    // set reverse friction
-    if (options && options.friction) {
-        this.options.friction = 1 - options.friction;
-    }
+		this.validateScrollTarget();
 
-    // register listener for cancel on wheel event
-    window.addEventListener('mousewheel', function (event) {
-        if (_this._raf) {
-            _this.options.onCancel();
-            cancelAnimationFrame(_this._raf);
-            _this._raf = null;
-        }
-    }, {
-        passive: true
-    });
-};
+		// set reverse friction
+		if (options && options.friction) {
+			this.options.friction = 1 - options.friction;
+		}
+
+		// register listener for cancel on wheel event
+		window.addEventListener('mousewheel', function (event) {
+			if (_this._raf) {
+				_this.options.onCancel();
+				cancelAnimationFrame(_this._raf);
+				_this._raf = null;
+			}
+		}, {
+			passive: true
+		});
+	}
+
+	/**
+  * Validates options.scrollTarget
+  */
+
+
+	_createClass(Scrl, [{
+		key: 'validateScrollTarget',
+		value: function validateScrollTarget() {
+			if (this.options.scrollTarget == null) {
+				throw new Error("[scrl] options.scrollTarget can't be null");
+			}
+			if (!this._scrollTargetIsWindow() && !(this.options.scrollTarget instanceof Element)) {
+				throw new Error('[srcl] options.scrollTarget expects either window or an HTMLElement. Given value:', options.scrollTarget);
+			}
+		}
+
+		/**
+   * scroll towards a number or HTMLElement
+   * @param {number|HTMLElement} offsetOrElement
+   * @returns
+   */
+
+
+		/**
+   * Animate the scroll position
+   */
+
+
+		/**
+   * Updates and returns the distance the scroll has still to go
+   * @returns float
+   */
+
+
+		/**
+   * Apply the current scroll position to either the window or the HTMLElement
+   */
+
+	}, {
+		key: '_scrollTargetIsWindow',
+
+
+		/**
+   * Checks if an the given options.scrollTarget is equal to window
+   * @see https://stackoverflow.com/a/3099796/586823
+   * @returns boolean
+   */
+		value: function _scrollTargetIsWindow() {
+			return this.options.scrollTarget.self === window;
+		}
+
+		/**
+   * Get the target scroll position for a given HTMLElement
+   * @param {window|HTMLElement} targetElement
+   * @returns float
+   */
+
+	}, {
+		key: '_getTargetPositionFromElement',
+		value: function _getTargetPositionFromElement(targetElement) {
+			if (this._scrollTargetIsWindow()) {
+				return Math.round(targetElement.getBoundingClientRect().top + window.pageYOffset);
+			}
+			return targetElement.getBoundingClientRect().top - this.options.scrollTarget.getBoundingClientRect().top + this.options.scrollTarget.scrollTop;
+		}
+
+		/**
+   * Get the maximum scroll position
+   * @returns float
+   */
+
+	}, {
+		key: '_getMaximumPossibleScrollPosition',
+		value: function _getMaximumPossibleScrollPosition() {
+			if (this._scrollTargetIsWindow()) {
+				return document.documentElement.scrollHeight - window.innerHeight;
+			}
+			return this.options.scrollTarget.scrollHeight - this.options.scrollTarget.offsetHeight;
+		}
+
+		/**
+   * Returns the scrollTarget's current scroll position
+   * @returns float
+   */
+
+	}, {
+		key: '_getScrollPosition',
+		value: function _getScrollPosition() {
+			return this._scrollTargetIsWindow() ? window.pageYOffset : this.options.scrollTarget.scrollTop;
+		}
+	}]);
+
+	return Scrl;
+}();
 
 exports.default = Scrl;
 
