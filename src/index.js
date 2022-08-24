@@ -26,7 +26,7 @@ export default class Scrl {
 		};
 
 		if (!this._elementIsWindow() && !(this.options.element instanceof Element)) {
-			console.warn(
+			throw new Error(
 				'[srcl] options.element expects either window or an HTMLElement. Given value:',
 				options.element
 			);
