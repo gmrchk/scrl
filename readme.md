@@ -22,11 +22,12 @@ Scrl accepts several options:
 ```javascript
 const defaults = {
     onAlreadyAtPositions: () => {}, // handler called when link leads to the offset page is already at
-    onCancel: () => {},             // handler called on cancel of animation by mouse scroll
-    onEnd: () => {},                // handler called on end of animation
-    onStart: () => {},              // handler called on start of animation
-    onTick: () => {},               // handler called on every step of animation
-    friction: .3,                   // friction of scroll animation    
-    acceleration: .04,              // acceleration of scroll animation
+    onCancel: () => {},             // handler called on cancel of the animation by mouse scroll
+    onEnd: () => {},                // handler called on end of the animation
+    onStart: () => {},              // handler called on start of the animation
+    onTick: () => {},               // handler called on every step of the animation
+    friction: .3,                   // the friction of the scroll animation    
+    acceleration: .04,              // the acceleration of the scroll animation,
+    target: window,                 // which element to scroll. either window or an element on the page
 }
 ```
