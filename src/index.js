@@ -48,9 +48,9 @@ export default class Scrl {
 		);
 	}
 
-    /**
-     * Validates options.target
-     */
+	/**
+	 * Validates options.target
+	 */
 	validateScrollTarget() {
 		if (this.options.target == null) {
 			throw new Error("[scrl] options.target can't be null");

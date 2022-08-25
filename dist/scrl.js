@@ -202,7 +202,7 @@ var Scrl = function () {
 		};
 
 		this._render = function () {
-			_this.options.scrollTarget.scrollTo(0, _this._positionY);
+			_this.options.target.scrollTo(0, _this._positionY);
 		};
 
 		// default options
@@ -214,7 +214,7 @@ var Scrl = function () {
 			onTick: function onTick() {},
 			friction: 0.7, // 1 - .3
 			acceleration: 0.04,
-			scrollTarget: window
+			target: window
 		};
 
 		// merge options
@@ -240,18 +240,18 @@ var Scrl = function () {
 	}
 
 	/**
-  * Validates options.scrollTarget
+  * Validates options.target
   */
 
 
 	_createClass(Scrl, [{
 		key: 'validateScrollTarget',
 		value: function validateScrollTarget() {
-			if (this.options.scrollTarget == null) {
-				throw new Error("[scrl] options.scrollTarget can't be null");
+			if (this.options.target == null) {
+				throw new Error("[scrl] options.target can't be null");
 			}
-			if (!this._scrollTargetIsWindow() && !(this.options.scrollTarget instanceof Element)) {
-				throw new Error('[srcl] options.scrollTarget expects either window or an HTMLElement. Given value:', options.scrollTarget);
+			if (!this._targetIsWindow() && !(this.options.target instanceof Element)) {
+				throw new Error('[srcl] options.target expects either window or an HTMLElement. Given value:', options.target);
 			}
 		}
 
@@ -278,16 +278,16 @@ var Scrl = function () {
    */
 
 	}, {
-		key: '_scrollTargetIsWindow',
+		key: '_targetIsWindow',
 
 
 		/**
-   * Checks if an the given options.scrollTarget is equal to window
+   * Checks if an the given options.target is equal to window
    * @see https://stackoverflow.com/a/3099796/586823
    * @returns boolean
    */
-		value: function _scrollTargetIsWindow() {
-			return this.options.scrollTarget.self === window;
+		value: function _targetIsWindow() {
+			return this.options.target.self === window;
 		}
 
 		/**
@@ -299,10 +299,10 @@ var Scrl = function () {
 	}, {
 		key: '_getTargetPositionFromElement',
 		value: function _getTargetPositionFromElement(targetElement) {
-			if (this._scrollTargetIsWindow()) {
+			if (this._targetIsWindow()) {
 				return Math.round(targetElement.getBoundingClientRect().top + window.pageYOffset);
 			}
-			return targetElement.getBoundingClientRect().top - this.options.scrollTarget.getBoundingClientRect().top + this.options.scrollTarget.scrollTop;
+			return targetElement.getBoundingClientRect().top - this.options.target.getBoundingClientRect().top + this.options.target.scrollTop;
 		}
 
 		/**
@@ -313,21 +313,21 @@ var Scrl = function () {
 	}, {
 		key: '_getMaximumPossibleScrollPosition',
 		value: function _getMaximumPossibleScrollPosition() {
-			if (this._scrollTargetIsWindow()) {
+			if (this._targetIsWindow()) {
 				return document.documentElement.scrollHeight - window.innerHeight;
 			}
-			return this.options.scrollTarget.scrollHeight - this.options.scrollTarget.offsetHeight;
+			return this.options.target.scrollHeight - this.options.target.offsetHeight;
 		}
 
 		/**
-   * Returns the scrollTarget's current scroll position
+   * Returns the target's current scroll position
    * @returns float
    */
 
 	}, {
 		key: '_getScrollPosition',
 		value: function _getScrollPosition() {
-			return this._scrollTargetIsWindow() ? window.pageYOffset : this.options.scrollTarget.scrollTop;
+			return this._targetIsWindow() ? window.pageYOffset : this.options.target.scrollTop;
 		}
 	}]);
 
