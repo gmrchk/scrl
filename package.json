@@ -1,14 +1,21 @@
 {
   "name": "scrl",
-  "version": "1.0.0",
+  "amdName": "Scrl",
+  "version": "2.0.0",
   "description": "Page acceleration based scroll animation.",
-  "main": "lib/index.js",
+  "type": "module",
+  "source": "src/index.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.module.js",
+  "exports": "./dist/index.modern.js",
+  "unpkg": "./dist/index.umd.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "compile": "babel --presets es2015,stage-0 -d lib/ src/",
-    "build": "webpack-cli",
-    "prepublish": "npm run compile",
-    "size": "gzip -c dist/scrl.min.js | wc -c"
+    "build": "microbundle",
+    "prepublish": "npm run build",
+    "size": "gzip -c dist/index.umd.js | wc -c"
   },
   "author": "Georgy Marchuk",
   "license": "MIT",
@@ -22,12 +29,6 @@
     "window scroll"
   ],
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-loader": "^7.1.4",
-    "babel-preset-es2015": "^6.24.1",
-    "babel-preset-stage-0": "^6.24.1",
-    "uglifyjs-webpack-plugin": "^1.2.5",
-    "webpack": "^4.20.2",
-    "webpack-cli": "^3.1.1"
+    "microbundle": "^0.15.1"
   }
 }

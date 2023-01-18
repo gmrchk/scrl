@@ -1,4 +1,3 @@
-
 export default class Scrl {
     _raf = null;
     _positionY = 0;
@@ -73,7 +72,7 @@ export default class Scrl {
             // page is already at the position
             this.options.onAlreadyAtPositions();
         }
-    }
+    };
 
     _animate = () => {
         const distance = this._update();
@@ -92,7 +91,7 @@ export default class Scrl {
             this.options.onEnd();
             // this.triggerEvent('scrollDone')
         }
-    }
+    };
 
     _update = () => {
         const distance = this._targetPositionYWithOffset - this._positionY;
@@ -104,9 +103,9 @@ export default class Scrl {
         this._positionY += this._velocityY;
 
         return Math.abs(distance);
-    }
+    };
 
     _render = () => {
         window.scrollTo(0, this._positionY);
-    }
+    };
 }
