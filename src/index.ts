@@ -1,4 +1,4 @@
-type PluginOptions = {
+export type Options = {
   onAlreadyAtPositions: () => void;
   onCancel: () => void;
   onEnd: () => void;
@@ -16,7 +16,7 @@ export default class Scrl {
   _targetPositionYWithOffset = 0;
   _direction = 0;
 
-  defaults: PluginOptions = {
+  defaults: Options = {
     onAlreadyAtPositions: () => {},
     onCancel: () => {},
     onEnd: () => {},
@@ -26,9 +26,9 @@ export default class Scrl {
     acceleration: 0.04,
   };
 
-  options: PluginOptions;
+  options: Options;
 
-  constructor(options: Partial<PluginOptions> = {}) {
+  constructor(options: Partial<Options> = {}) {
 
     // merge options
     this.options = {
