@@ -98,7 +98,6 @@ export default class Scrl {
   };
 
   _animate = () => {
-    const distance = this._update();
     this._render();
 
     if (
@@ -115,7 +114,6 @@ export default class Scrl {
       this._raf = undefined;
       this.options.onTick();
       this.options.onEnd();
-      // this.triggerEvent('scrollDone')
     }
   };
 
